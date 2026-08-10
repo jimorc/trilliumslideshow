@@ -1,11 +1,23 @@
 use wxdragon::prelude::*;
 
+/// The program's main window.
+///
+/// This struct represents the main window of the application.
+/// 
 pub struct MainFrame {
     value: i32,
     frame: Frame,
 }
 
 impl MainFrame {
+    /// Creates a new instance of `MainFrame`.
+    /// 
+    /// # Example
+    /// 
+    /// ```
+    /// let frame = MainFrame::new();
+    /// frame.show();
+    /// ```
     pub fn new() -> Self {
         SystemOptions::set_option_by_int("msw.no-manifest-check", 1);
         let frame = Frame::builder()
@@ -33,10 +45,25 @@ impl MainFrame {
         Self { value: 42, frame }
     }
 
+    /// Shows the main frame.
+    /// 
+    /// # Example
+    /// ```
+    /// let frame = MainFrame::new();
+    /// frame.show();
+    /// ```
     pub fn show(&self) {
         self.frame.show(true);
     }
 
+    /// Centers the main frame on the screen.
+    /// 
+    /// # Example
+    /// ```
+    /// let frame = MainFrame::new();
+    /// frame.show();
+    /// frame.centre();
+    /// ```
     pub fn centre(&self) {
         self.frame.centre();
     }
