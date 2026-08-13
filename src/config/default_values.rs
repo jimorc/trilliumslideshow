@@ -14,17 +14,8 @@ pub struct DefaultValues {
     slide_height: i32,
 }
 
-impl Default for DefaultValues {
-    fn default() -> Self {
-        Self {
-            slide_width: DEFAULT_SLIDE_WIDTH,
-            slide_height: DEFAULT_SLIDE_HEIGHT,
-        }
-    }
-}
-
 impl DefaultValues {
-    fn new() -> Self {
+    pub fn new() -> Self {
         DefaultValues {
             slide_width: DEFAULT_SLIDE_WIDTH,
             slide_height: DEFAULT_SLIDE_HEIGHT,
@@ -33,37 +24,24 @@ impl DefaultValues {
 
     fn from_config_file_or_default(config_file_path: &str) -> Result<DefaultValues, io::Error> {
         match fs::read_to_string(config_file_path) {
-            Ok(content) => {
-                match  toml::from_str(&content) {
-                    Ok(dv) => Ok(dv),
-                    Err(e) => {
-                        Ok(DefaultValues::new())
-                    }
-                }
-            }
+            Ok(content) => match toml::from_str(&content) {
+                Ok(dv) => Ok(dv),
+                Err(e) => Ok(DefaultValues::new()),
+            },
             Err(e) => {
                 if e.kind() == io::ErrorKind::NotFound {
                     #[cfg(test)]
                     {
-                        eprintln!("Config file not found. Creating default config file at: {}",
-                            config_file_path);
+                        eprintln!(
+                            "Config file not found. Creating default config file at: {}",
+                            config_file_path
+                        );
                     }
                     #[cfg(not(test))]
                     {}
                     let default_values = DefaultValues::new();
-                    let toml_str = toml::to_string(&default_values).unwrap();
-                    match fs::write(config_file_path, toml_str) {
-                        Ok(()) => return Ok(default_values),
-                        Err(err) => {
-                            #[cfg(test)]
-                            {
-                                eprintln!("Failed to write default config file: {}", err);
-                            }
-                            #[cfg(not(test))]
-                            {}
-                            return Ok(default_values)
-                        }
-                    }
+                    write_defaults(config_file_path, &default_values);
+                    return Ok(default_values);
                 } else {
                     return Err(e);
                 }
@@ -77,6 +55,25 @@ impl DefaultValues {
 
     pub fn get_slide_height(&self) -> i32 {
         self.slide_height
+    }
+}
+
+fn write_defaults(config_file_path: &str, default_values: &DefaultValues) {
+    // the following line should never panic.
+    // if it does, there is a bug in the code.
+    let toml_str = toml::to_string(&default_values).unwrap();
+
+    match fs::write(config_file_path, toml_str) {
+        Ok(()) => return (),
+        Err(err) => {
+            #[cfg(test)]
+            {
+                eprintln!("Failed to write default config file: {}", err);
+            }
+            #[cfg(not(test))]
+            {}
+            return ();
+        }
     }
 }
 
@@ -100,7 +97,10 @@ mod tests {
     #[test]
     fn test_valid_file() -> Result<(), String> {
         let config_file_path = "test_config2.toml";
-        let defaults = DefaultValues{slide_width: 1000, slide_height:750};
+        let defaults = DefaultValues {
+            slide_width: 1000,
+            slide_height: 750,
+        };
         match fs::write(config_file_path, toml::to_string(&defaults).unwrap()) {
             Err(e) => Err(String::from("Error writing default values file")),
             Ok(()) => {
@@ -114,15 +114,20 @@ mod tests {
                 Ok(())
             }
         }
-    }            
+    }
 
     #[test]
     fn test_invalid_content() -> Result<(), String> {
         let config_file_path = "test_config3.toml";
-        let bad_content = String::from("slide_width = 1000
-slide_heigh");
+        let bad_content = String::from(
+            "slide_width = 1000
+    slide_heigh",
+        );
         match fs::write(config_file_path, bad_content) {
-            Err(e) => Err(String::from(format!("Error writing bad content to file: {}", e))),
+            Err(e) => Err(String::from(format!(
+                "Error writing bad content to file: {}",
+                e
+            ))),
             Ok(()) => {
                 let result = DefaultValues::from_config_file_or_default(config_file_path);
                 let del_result = fs::remove_file(config_file_path);
@@ -133,7 +138,7 @@ slide_heigh");
                         assert_eq!(dv.get_slide_height(), 1050);
                         Ok(())
                     }
-                    Err(e) => Err(e.to_string())
+                    Err(e) => Err(e.to_string()),
                 }
             }
         }
