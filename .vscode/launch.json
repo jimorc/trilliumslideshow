@@ -5,25 +5,48 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug executable 'trilliumslideshow'",
+            "name": "Debug executable 'configurator'",
             "type": "lldb",
             "request": "launch",
             "cargo": {
                 "args": [
                     "run",
-                    "--bin=trilliumslideshow"
+                    "--bin=tssconfigurator"
                 ]
             },
             "args": []
         },
         {
-            "name": "Debug unit tests in executable 'trilliumslideshow'",
+            "name": "Debug unit tests in executable 'configurator'",
             "type": "lldb",
             "request": "launch",
             "cargo": {
                 "args": [
                     "test",
-                    "--bin=trilliumslideshow"
+                    "--bin=tssconfigurator"
+                ]
+            }
+        },
+        {
+            "name": "Debug executable 'viewer'",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "run",
+                    "--bin=tssviewer"
+                ]
+            },
+            "args": []
+        },
+        {
+            "name": "Debug unit tests in executable 'viewer'",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--bin=tssviewer"
                 ]
             }
         }
