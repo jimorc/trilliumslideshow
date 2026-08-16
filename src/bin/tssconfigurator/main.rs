@@ -1,5 +1,5 @@
 use trilliumslideshow::config::default_values::DefaultValues;
-use trilliumslideshow::gui::main_frame::MainFrame;
+use trilliumslideshow::ui::main_frame::MainFrame;
 
 fn main() {
     let _defaults = DefaultValues::new();

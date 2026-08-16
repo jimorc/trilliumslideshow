@@ -1,5 +1,5 @@
 pub mod config;
-pub mod gui;
+pub mod ui;
 
 pub use config::default_values::DefaultValues;
-pub use gui::main_frame::MainFrame;
+pub use ui::main_frame::MainFrame;
