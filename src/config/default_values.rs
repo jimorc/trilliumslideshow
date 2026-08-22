@@ -41,9 +41,9 @@ impl DefaultValues {
                     {}
                     let default_values = DefaultValues::new();
                     write_defaults(config_file_path, &default_values);
-                    return Ok(default_values);
+                    Ok(default_values)
                 } else {
-                    return Err(e);
+                    Err(e)
                 }
             }
         }
@@ -64,7 +64,7 @@ fn write_defaults(config_file_path: &str, default_values: &DefaultValues) {
     let toml_str = toml::to_string(&default_values).unwrap();
 
     match fs::write(config_file_path, toml_str) {
-        Ok(()) => return (),
+        Ok(()) => (),
         Err(err) => {
             #[cfg(test)]
             {
@@ -72,7 +72,6 @@ fn write_defaults(config_file_path: &str, default_values: &DefaultValues) {
             }
             #[cfg(not(test))]
             {}
-            return ();
         }
     }
 }
@@ -124,10 +123,10 @@ mod tests {
     slide_heigh",
         );
         match fs::write(config_file_path, bad_content) {
-            Err(e) => Err(String::from(format!(
+            Err(e) => Err(format!(
                 "Error writing bad content to file: {}",
                 e
-            ))),
+            )),
             Ok(()) => {
                 let result = DefaultValues::from_config_file_or_default(config_file_path);
                 let del_result = fs::remove_file(config_file_path);
