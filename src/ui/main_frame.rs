@@ -1,5 +1,7 @@
 use wxdragon::prelude::*;
 
+use crate::ui::create_default_values_dialog;
+
 /// tssconfigurator's main window.
 ///
 /// This struct represents the main window of the application.
@@ -24,7 +26,7 @@ impl MainFrame {
             .with_size(Size::new(400, 200))
             .build();
         let main_frame = Self { frame };
-        let start_button = create_start_button(&main_frame);
+        let start_button = create_start_button(main_frame);
         let quit_button = create_quit_button(&frame);
         let sizer = BoxSizer::builder(Orientation::Vertical).build();
         sizer.add(
@@ -72,11 +74,13 @@ impl MainFrame {
     }
 }
 
-pub fn create_start_button(parent: &MainFrame) -> Button {
+pub fn create_start_button(parent: MainFrame) -> Button {
     let button = Button::builder(parent.get_frame())
         .with_label("Start Configuration")
         .build();
     button.on_click(move |_| {
+        let dialog = create_default_values_dialog(&parent);
+        let results = dialog.show_modal();
         println!("Start button clicked!");
         // Here you can add the logic to start the configuration process.
     });
