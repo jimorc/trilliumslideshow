@@ -1,16 +1,30 @@
 use wxdragon::prelude::*;
 
-use crate::ui::main_frame::MainFrame;
+use crate::ui::MainFrame;
 
-pub fn create_default_values_dialog(parent: &MainFrame) -> Dialog {
-    let dialog = Dialog::builder(parent.get_frame(), "Default Values")
-        .with_size(500, 600)
-        .build();
+pub struct DefaultValuesDialog {
+    dialog: Dialog,
+}
 
-    let sizer = BoxSizer::builder(Orientation::Vertical).build();
+impl DefaultValuesDialog {
+    pub fn new(parent: &MainFrame, caption: &str) -> Self {
+        let dialog = Dialog::builder(parent.get_frame(), caption)
+            .with_size(500, 600)
+            .build();
 
-    // Add controls for default values here (e.g., text boxes, labels, etc.)
+        let sizer = BoxSizer::builder(Orientation::Vertical).build();
 
-    dialog.set_sizer(sizer, true);
-    dialog
+        // Add controls for default values here (e.g., text boxes, labels, etc.)
+
+        dialog.set_sizer(sizer, true);
+        Self { dialog }
+    }
+
+    pub fn get_dialog(&self) -> &Dialog {
+        &self.dialog
+    }
+
+    pub fn show_modal(&self) {
+        self.dialog.show_modal();
+    }
 }

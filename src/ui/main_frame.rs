@@ -1,6 +1,6 @@
 use wxdragon::prelude::*;
 
-use crate::ui::create_default_values_dialog;
+use crate::ui::DefaultValuesDialog;
 
 /// tssconfigurator's main window.
 ///
@@ -79,8 +79,8 @@ pub fn create_start_button(parent: MainFrame) -> Button {
         .with_label("Start Configuration")
         .build();
     button.on_click(move |_| {
-        let dialog = create_default_values_dialog(&parent);
-        let results = dialog.show_modal();
+        let dialog = DefaultValuesDialog::new(&parent, "Default Values");
+        let results = dialog.get_dialog().show_modal();
         println!("Start button clicked!");
         // Here you can add the logic to start the configuration process.
     });
