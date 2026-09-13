@@ -4,7 +4,7 @@ use wxdragon::prelude::*;
 ///
 /// This struct represents the main window of the application.
 pub struct MainFrame {
-    pub frame: Frame,
+    frame: Frame,
 }
 
 impl MainFrame {
@@ -23,7 +23,8 @@ impl MainFrame {
             .with_title("Slideshow Configurator")
             .with_size(Size::new(400, 200))
             .build();
-        let start_button = create_start_button(&frame);
+        let main_frame = Self { frame };
+        let start_button = create_start_button(&main_frame);
         let quit_button = create_quit_button(&frame);
         let sizer = BoxSizer::builder(Orientation::Vertical).build();
         sizer.add(
@@ -64,10 +65,15 @@ impl MainFrame {
     pub fn centre(&self) {
         self.frame.centre();
     }
+
+    /// Returns a reference to the underlying `Frame`.
+    pub fn get_frame(&self) -> &Frame {
+        &self.frame
+    }
 }
 
-pub fn create_start_button(parent: &Frame) -> Button {
-    let button = Button::builder(parent)
+pub fn create_start_button(parent: &MainFrame) -> Button {
+    let button = Button::builder(parent.get_frame())
         .with_label("Start Configuration")
         .build();
     button.on_click(move |_| {
@@ -81,7 +87,6 @@ pub fn create_quit_button(parent: &Frame) -> Button {
     let button = Button::builder(parent).with_label("Quit").build();
     button.on_click(move |_| {
         std::process::exit(0);
-        // Here you can add the logic to handle the exit action.
     });
     button
 }
