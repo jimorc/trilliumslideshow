@@ -24,7 +24,7 @@ impl MainFrame {
             .with_size(Size::new(400, 200))
             .build();
         let start_button = create_start_button(&frame);
-        let exit_button = create_exit_button(&frame);
+        let quit_button = create_quit_button(&frame);
         let sizer = BoxSizer::builder(Orientation::Vertical).build();
         sizer.add(
             &start_button,
@@ -33,7 +33,7 @@ impl MainFrame {
             5,
         );
         sizer.add(
-            &exit_button,
+            &quit_button,
             0,
             SizerFlag::All | SizerFlag::AlignCenterHorizontal,
             5,
@@ -67,11 +67,21 @@ impl MainFrame {
 }
 
 pub fn create_start_button(parent: &Frame) -> Button {
-    Button::builder(parent)
+    let button = Button::builder(parent)
         .with_label("Start Configuration")
-        .build()
+        .build();
+    button.on_click(move |_| {
+        println!("Start button clicked!");
+        // Here you can add the logic to start the configuration process.
+    });
+    button
 }
 
-pub fn create_exit_button(parent: &Frame) -> Button {
-    Button::builder(parent).with_label("Exit").build()
+pub fn create_quit_button(parent: &Frame) -> Button {
+    let button = Button::builder(parent).with_label("Quit").build();
+    button.on_click(move |_| {
+        std::process::exit(0);
+        // Here you can add the logic to handle the exit action.
+    });
+    button
 }
