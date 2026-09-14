@@ -29,16 +29,24 @@ impl DefaultsStatusDialog {
         sizer.add(&status, 1, SizerFlag::Top, 5);
 
         let button_sizer = StdDialogButtonSizerBuilder::new().build();
-        let ok_button = Button::builder(&dialog)
-            .with_label("OK")
-            .with_id(ID_OK)
+        let edit_button = Button::builder(&dialog)
+            .with_label("Edit Defaults")
+            .with_id(ID_APPLY)
             .build();
+        edit_button.on_click(move |_| {
+            dialog.end_modal(ID_APPLY);
+        });
         let quit_button = Button::builder(&dialog)
             .with_label("Quit")
             .with_id(ID_CANCEL)
             .build();
+        let config_button = Button::builder(&dialog)
+            .with_label("Configure Slideshow")
+            .with_id(ID_OK)
+            .build();
 
-        button_sizer.add_button(&ok_button);
+        button_sizer.add_button(&edit_button);
+        button_sizer.add_button(&config_button);
         button_sizer.add_button(&quit_button);
         button_sizer.realize();
 

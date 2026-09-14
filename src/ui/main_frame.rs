@@ -98,12 +98,19 @@ pub fn create_start_button(mut parent: MainFrame) -> Button {
     button.on_click(move |_| {
         let dialog = DefaultsStatusDialog::new(&mut parent, "Load Defaults");
         match dialog.get_dialog().show_modal() {
-            ID_OK => {
+            ID_APPLY => {
+                // Edit Defaults button clicked
                 let dialog = DefaultValuesDialog::new(&parent, "Set Defaults");
                 dialog.get_dialog().show_modal();
             }
             ID_CANCEL => {
+                // Quit button clicked
                 std::process::exit(0);
+            }
+            ID_OK => {
+                // Configure Slideshow button clicked
+                // Handle the "Configure Slideshow" button click
+                // You can add your logic here to start the configuration process.
             }
             _ => {
                 // Handle other cases
