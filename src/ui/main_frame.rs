@@ -80,8 +80,18 @@ pub fn create_start_button(parent: MainFrame) -> Button {
         .build();
     button.on_click(move |_| {
         let dialog = DefaultValuesDialog::new(&parent, "Default Values");
-        let results = dialog.get_dialog().show_modal();
-        println!("Start button clicked!");
+        match dialog.get_dialog().show_modal() {
+            ID_OK => {
+                println!("OK button clicked");
+            }
+            ID_CANCEL => {
+                println!("Quit button clicked");
+                std::process::exit(0);
+            }
+            _ => {
+                // Handle other cases
+            }
+        }
         // Here you can add the logic to start the configuration process.
     });
     button
