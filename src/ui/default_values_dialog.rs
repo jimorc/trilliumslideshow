@@ -70,11 +70,6 @@ impl DefaultValuesDialog {
         button_sizer.add_button(&quit_button);
         button_sizer.realize();
 
-        let sep = StaticLine::builder(&dialog)
-            .with_style(StaticLineStyle::Default)
-            .with_size(Size::new(dialog.get_client_size().width, -1))
-            .build();
-        sizer.add(&sep, 0, SizerFlag::Bottom, BORDER);
         sizer.add_sizer(&button_sizer, 0, SizerFlag::AlignRight, BORDER);
 
         dialog.set_sizer(sizer, true);
