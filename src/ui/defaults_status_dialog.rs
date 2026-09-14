@@ -33,6 +33,7 @@ impl DefaultsStatusDialog {
             .with_label("Edit Defaults")
             .with_id(ID_APPLY)
             .build();
+        edit_button.set_tooltip("Click to edit the default values");
         edit_button.on_click(move |_| {
             dialog.end_modal(ID_APPLY);
         });
@@ -40,10 +41,12 @@ impl DefaultsStatusDialog {
             .with_label("Quit")
             .with_id(ID_CANCEL)
             .build();
+        quit_button.set_tooltip("Click to terminate the program");
         let config_button = Button::builder(&dialog)
             .with_label("Configure Slideshow")
             .with_id(ID_OK)
             .build();
+        config_button.set_tooltip("Click to configure a slide show");
 
         button_sizer.add_button(&edit_button);
         button_sizer.add_button(&config_button);
