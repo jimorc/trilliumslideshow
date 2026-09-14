@@ -16,13 +16,14 @@ impl DefaultsStatusDialog {
     /// Creates a new instance of `DefaultsStatusDialog`.
     ///
     /// This is called from MainFrame::new and displays as the first dialog in MainFrame.
-    pub fn new(parent: &MainFrame, caption: &str) -> Self {
+    pub fn new(parent: &mut MainFrame, caption: &str) -> Self {
         const BORDER: i32 = 5;
         let dialog = Dialog::builder(parent.get_frame(), caption).build();
 
         let sizer = BoxSizer::builder(Orientation::Vertical).build();
 
         let (defaults, statuses) = DataValues::from_config_file_if_exists();
+        parent.set_defaults(Some(defaults));
         let status = Self::build_status_label(&dialog, statuses.clone());
 
         sizer.add(&status, 1, SizerFlag::Top, 5);

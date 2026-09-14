@@ -1,12 +1,14 @@
 use wxdragon::prelude::*;
 
 use crate::ui::{DefaultValuesDialog, DefaultsStatusDialog};
+use crate::values::DataValues;
 
 /// tssconfigurator's main window.
 ///
 /// This struct represents the main window of the application.
 pub struct MainFrame {
     frame: Frame,
+    defaults: Option<DataValues>,
 }
 
 impl MainFrame {
@@ -26,7 +28,10 @@ impl MainFrame {
             .with_title("Slideshow Configurator")
             .with_size(Size::new(400, 200))
             .build();
-        let main_frame = Self { frame };
+        let main_frame = Self {
+            frame,
+            defaults: None,
+        };
         let start_button = create_start_button(main_frame);
         let quit_button = create_quit_button(&frame);
         let sizer = BoxSizer::builder(Orientation::Vertical).build();
@@ -43,7 +48,10 @@ impl MainFrame {
             BORDER,
         );
         frame.set_sizer(sizer, true);
-        Self { frame }
+        Self {
+            frame,
+            defaults: None,
+        }
     }
 
     /// Shows the main frame.
@@ -69,18 +77,26 @@ impl MainFrame {
         self.frame.centre();
     }
 
+    pub fn set_defaults(&mut self, defaults: Option<DataValues>) {
+        self.defaults = defaults;
+    }
+
+    pub fn get_defaults(&self) -> &Option<DataValues> {
+        &self.defaults
+    }
+
     /// Returns a reference to the underlying `Frame`.
     pub fn get_frame(&self) -> &Frame {
         &self.frame
     }
 }
 
-pub fn create_start_button(parent: MainFrame) -> Button {
+pub fn create_start_button(mut parent: MainFrame) -> Button {
     let button = Button::builder(parent.get_frame())
         .with_label("Start Configuration")
         .build();
     button.on_click(move |_| {
-        let dialog = DefaultsStatusDialog::new(&parent, "Load Defaults");
+        let dialog = DefaultsStatusDialog::new(&mut parent, "Load Defaults");
         match dialog.get_dialog().show_modal() {
             ID_OK => {
                 let dialog = DefaultValuesDialog::new(&parent, "Set Defaults");
