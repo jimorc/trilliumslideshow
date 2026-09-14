@@ -20,6 +20,7 @@ impl MainFrame {
     /// ```
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
+        const BORDER: i32 = 5;
         SystemOptions::set_option_by_int("msw.no-manifest-check", 1);
         let frame = Frame::builder()
             .with_title("Slideshow Configurator")
@@ -33,13 +34,13 @@ impl MainFrame {
             &start_button,
             0,
             SizerFlag::All | SizerFlag::AlignCenterHorizontal,
-            5,
+            BORDER,
         );
         sizer.add(
             &quit_button,
             0,
             SizerFlag::All | SizerFlag::AlignCenterHorizontal,
-            5,
+            BORDER,
         );
         frame.set_sizer(sizer, true);
         Self { frame }
