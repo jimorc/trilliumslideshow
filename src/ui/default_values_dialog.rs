@@ -56,6 +56,12 @@ impl DefaultValuesDialog {
 
         sizer.add(&size_box, 0, SizerFlag::Top, BORDER);
 
+        let sep = StaticLine::builder(&dialog)
+            .with_style(StaticLineStyle::Default)
+            .with_size(Size::new(dialog.get_client_size().width, -1))
+            .build();
+        sizer.add(&sep, 0, SizerFlag::Bottom, BORDER);
+
         let button_sizer = StdDialogButtonSizerBuilder::new().build();
         let ok_button = button::Button::builder(&dialog)
             .with_label("OK")
@@ -70,7 +76,12 @@ impl DefaultValuesDialog {
         button_sizer.add_button(&quit_button);
         button_sizer.realize();
 
-        sizer.add_sizer(&button_sizer, 0, SizerFlag::AlignRight, BORDER);
+        sizer.add_sizer(
+            &button_sizer,
+            0,
+            SizerFlag::Bottom | SizerFlag::AlignRight,
+            BORDER,
+        );
 
         dialog.set_sizer(sizer, true);
         dialog.fit();
