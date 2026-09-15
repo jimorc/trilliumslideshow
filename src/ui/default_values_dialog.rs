@@ -27,39 +27,7 @@ impl DefaultValuesDialog {
             .build();
         sizer.add(&sep, 0, SizerFlag::Bottom, BORDER);
 
-        let button_sizer = StdDialogButtonSizerBuilder::new().build();
-        let config_button = Button::builder(&dialog)
-            .with_label("Configure Slideshow")
-            // TODO: change this to ID_OK when ID_SAVE added to wxDragon
-            .with_id(ID_NO)
-            .build();
-        config_button.set_tooltip("Click to configure a slide show.");
-        config_button.on_click(move |_| {
-            dialog.end_modal(ID_NO);
-        });
-
-        let quit_button = Button::builder(&dialog)
-            .with_label("Quit")
-            .with_id(ID_CANCEL)
-            .build();
-        quit_button.set_tooltip("Click to terminate the program.");
-
-        let save_button = Button::builder(&dialog)
-            .with_label("Save")
-            // TODO: change this to ID_SAVE when ID_SAVE added to wxDragon
-            .with_id(ID_YES)
-            .build();
-        save_button.set_tooltip("Click to save changes.");
-        save_button.enable(false);
-        save_button.on_click(move |_| {
-            println!("save button clicked.");
-        });
-
-        button_sizer.add_button(&config_button);
-        button_sizer.add_button(&quit_button);
-        button_sizer.add_button(&save_button);
-        button_sizer.realize();
-
+        let button_sizer = create_button_sizer(&dialog);
         sizer.add_sizer(
             &button_sizer,
             0,
@@ -128,4 +96,41 @@ fn create_size_box(&dialog: &Dialog, defaults: &crate::DataValues, border: i32) 
     size_box.set_min_size(Size::new(500, min_height));
 
     size_box
+}
+
+fn create_button_sizer(&dialog: &Dialog) -> StdDialogButtonSizer {
+    let button_sizer = StdDialogButtonSizerBuilder::new().build();
+    let config_button = Button::builder(&dialog)
+        .with_label("Configure Slideshow")
+        // TODO: change this to ID_OK when ID_SAVE added to wxDragon
+        .with_id(ID_NO)
+        .build();
+    config_button.set_tooltip("Click to configure a slide show.");
+    config_button.on_click(move |_| {
+        dialog.end_modal(ID_NO);
+    });
+
+    let quit_button = Button::builder(&dialog)
+        .with_label("Quit")
+        .with_id(ID_CANCEL)
+        .build();
+    quit_button.set_tooltip("Click to terminate the program.");
+
+    let save_button = Button::builder(&dialog)
+        .with_label("Save")
+        // TODO: change this to ID_SAVE when ID_SAVE added to wxDragon
+        .with_id(ID_YES)
+        .build();
+    save_button.set_tooltip("Click to save changes.");
+    save_button.enable(false);
+    save_button.on_click(move |_| {
+        println!("save button clicked.");
+    });
+
+    button_sizer.add_button(&config_button);
+    button_sizer.add_button(&quit_button);
+    button_sizer.add_button(&save_button);
+    button_sizer.realize();
+
+    button_sizer
 }
