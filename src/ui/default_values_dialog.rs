@@ -67,18 +67,34 @@ impl DefaultValuesDialog {
         let button_sizer = StdDialogButtonSizerBuilder::new().build();
         let config_button = Button::builder(&dialog)
             .with_label("Configure Slideshow")
-            .with_id(ID_OK)
+            // TODO: change this to ID_OK when ID_SAVE added to wxDragon
+            .with_id(ID_NO)
             .build();
         config_button.set_tooltip("Click to configure a slide show.");
+        config_button.on_click(move |_| {
+            dialog.end_modal(ID_NO);
+        });
 
-        let quit_button = button::Button::builder(&dialog)
+        let quit_button = Button::builder(&dialog)
             .with_label("Quit")
             .with_id(ID_CANCEL)
             .build();
         quit_button.set_tooltip("Click to terminate the program.");
 
+        let save_button = Button::builder(&dialog)
+            .with_label("Save")
+            // TODO: change this to ID_SAVE when ID_SAVE added to wxDragon
+            .with_id(ID_YES)
+            .build();
+        save_button.set_tooltip("Click to save changes.");
+        save_button.enable(false);
+        save_button.on_click(move |_| {
+            println!("save button clicked.");
+        });
+
         button_sizer.add_button(&config_button);
         button_sizer.add_button(&quit_button);
+        button_sizer.add_button(&save_button);
         button_sizer.realize();
 
         sizer.add_sizer(
