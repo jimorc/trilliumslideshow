@@ -1,4 +1,4 @@
-use wxdragon::{prelude::*, widgets::button};
+use wxdragon::prelude::*;
 
 use crate::ui::MainFrame;
 

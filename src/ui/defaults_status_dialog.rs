@@ -23,7 +23,7 @@ impl DefaultsStatusDialog {
         let sizer = BoxSizer::builder(Orientation::Vertical).build();
 
         let (defaults, statuses) = DataValues::from_config_file_if_exists();
-        parent.set_defaults(Some(defaults));
+        parent.set_data(Some(defaults));
         let status = Self::build_status_label(&dialog, statuses.clone());
 
         sizer.add(&status, 1, SizerFlag::Top, 5);

@@ -8,7 +8,7 @@ use crate::values::DataValues;
 /// This struct represents the main window of the application.
 pub struct MainFrame {
     frame: Frame,
-    defaults: Option<DataValues>,
+    config_data: Option<DataValues>,
 }
 
 impl MainFrame {
@@ -30,7 +30,7 @@ impl MainFrame {
             .build();
         let main_frame = Self {
             frame,
-            defaults: None,
+            config_data: None,
         };
         let start_button = create_start_button(main_frame);
         let quit_button = create_quit_button(&frame);
@@ -50,7 +50,7 @@ impl MainFrame {
         frame.set_sizer(sizer, true);
         Self {
             frame,
-            defaults: None,
+            config_data: None,
         }
     }
 
@@ -77,12 +77,12 @@ impl MainFrame {
         self.frame.centre();
     }
 
-    pub fn set_defaults(&mut self, defaults: Option<DataValues>) {
-        self.defaults = defaults;
+    pub fn set_data(&mut self, defaults: Option<DataValues>) {
+        self.config_data = defaults;
     }
 
-    pub fn get_defaults(&self) -> &Option<DataValues> {
-        &self.defaults
+    pub fn get_data(&self) -> &Option<DataValues> {
+        &self.config_data
     }
 
     /// Returns a reference to the underlying `Frame`.
