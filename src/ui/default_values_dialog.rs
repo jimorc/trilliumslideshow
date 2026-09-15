@@ -23,8 +23,10 @@ impl DefaultValuesDialog {
         let horz_sizer = BoxSizer::builder(Orientation::Horizontal).build();
         let width_label = StaticText::builder(&size_box).with_label("Width:").build();
         let width_text = TextCtrl::builder(&size_box).with_value("800").build();
+        width_text.set_tooltip("Maximum width for slides.\nValue must be between 100 and 9999.");
         let height_label = StaticText::builder(&size_box).with_label("Height:").build();
         let height_text = TextCtrl::builder(&size_box).with_value("600").build();
+        height_text.set_tooltip("Maximum height for slides.\nValue must be between 100 and 9999.");
         horz_sizer.add(
             &width_label,
             0,
@@ -63,16 +65,19 @@ impl DefaultValuesDialog {
         sizer.add(&sep, 0, SizerFlag::Bottom, BORDER);
 
         let button_sizer = StdDialogButtonSizerBuilder::new().build();
-        let ok_button = button::Button::builder(&dialog)
-            .with_label("OK")
+        let config_button = Button::builder(&dialog)
+            .with_label("Configure Slideshow")
             .with_id(ID_OK)
             .build();
+        config_button.set_tooltip("Click to configure a slide show.");
+
         let quit_button = button::Button::builder(&dialog)
             .with_label("Quit")
             .with_id(ID_CANCEL)
             .build();
+        quit_button.set_tooltip("Click to terminate the program.");
 
-        button_sizer.add_button(&ok_button);
+        button_sizer.add_button(&config_button);
         button_sizer.add_button(&quit_button);
         button_sizer.realize();
 
