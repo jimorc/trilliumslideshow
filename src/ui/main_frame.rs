@@ -100,8 +100,8 @@ pub fn create_start_button(mut parent: MainFrame) -> Button {
         match dialog.get_dialog().show_modal() {
             ID_APPLY => {
                 // Edit Defaults button clicked
-                let dialog = DefaultValuesDialog::new(&parent, "Set Defaults");
-                match dialog.get_dialog().show_modal() {
+                let defaults_dialog = DefaultValuesDialog::builder(parent.get_frame(), "Set Defaults", dialog.data_values()).build();
+                match defaults_dialog.show_modal() {
                     ID_NO => {
                         // Configure Slideshow button clicked
                         // Handle the "Configure Slideshow" button click

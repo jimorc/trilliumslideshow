@@ -1,15 +1,26 @@
-use wxdragon::{event::KeyboardEvent, prelude::*};
+use wxdragon::prelude::*;
 
-use crate::ui::MainFrame;
+use crate::values::DataValues;
 
 pub struct DefaultValuesDialog {
     dialog: Dialog,
+    data: DataValues,
 }
 
-impl DefaultValuesDialog {
-    pub fn new(parent: &MainFrame, caption: &str) -> Self {
-        const BORDER: i32 = 5;
-        let defaults = parent.get_data().unwrap();
+impl<'a> DefaultValuesDialog {
+    pub fn builder(
+        parent: &'a dyn WxWidget,
+        caption: &'a str,
+        defaults: DataValues,
+    ) -> DefaultValuesDialogBuilder<'a> {
+        DefaultValuesDialogBuilder {
+            parent,
+            caption: "",
+            defaults,
+        }
+    }
+
+    /*        let defaults = parent.get_data().unwrap();
         let dialog = Dialog::builder(parent.get_frame(), caption)
             .with_size(500, 600)
             .build();
@@ -42,13 +53,36 @@ impl DefaultValuesDialog {
 
     pub fn get_dialog(&self) -> &Dialog {
         &self.dialog
-    }
+    }*/
 
-    pub fn show_modal(&self) {
-        self.dialog.show_modal();
+    pub fn show_modal(&self) -> i32 {
+        self.dialog.show_modal()
     }
 }
 
+pub struct DefaultValuesDialogBuilder<'a> {
+    parent: &'a dyn WxWidget,
+    caption: &'a str,
+    defaults: DataValues,
+}
+
+impl<'a> DefaultValuesDialogBuilder<'a> {
+    pub fn with_caption(&mut self, caption: &'a str) -> &Self {
+        self.caption = caption;
+        self
+    }
+
+    pub fn build(&self) -> DefaultValuesDialog {
+        let dialog = Dialog::builder(self.parent, self.caption)
+            .with_size(500, 600)
+            .build();
+        DefaultValuesDialog {
+            dialog,
+            data: self.defaults,
+        }
+    }
+}
+/*
 fn create_size_box(&dialog: &Dialog, defaults: &crate::DataValues, border: i32) -> StaticBox {
     let size_box = StaticBox::builder(&dialog)
         .with_label("Maximum Slide Size")
@@ -192,3 +226,4 @@ fn number_key_down(key_data: &KeyboardEvent) -> bool {
         }
     }
 }
+*/
