@@ -18,6 +18,7 @@ const DEFAULT_SLIDE_HEIGHT: i32 = 1050;
 /// tssconfigurator provides one or more ways to change these defaults.
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Default, Copy)]
 pub struct DataValues {
+    // i32 because that is what Size::new accepts
     slide_width: i32,
     slide_height: i32,
 }
