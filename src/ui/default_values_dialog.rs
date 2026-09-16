@@ -1,4 +1,4 @@
-use wxdragon::prelude::*;
+use wxdragon::{event::KeyboardEvent, prelude::*};
 
 use crate::ui::MainFrame;
 
@@ -58,13 +58,28 @@ fn create_size_box(&dialog: &Dialog, defaults: &crate::DataValues, border: i32) 
     let width_label = StaticText::builder(&size_box).with_label("Width:").build();
     let width_text = TextCtrl::builder(&size_box)
         .with_value(&defaults.get_slide_width().to_string())
+        .with_style(TextCtrlStyle::ProcessEnter)
         .build();
-    width_text.set_tooltip("Maximum width for slides.\nValue must be between 100 and 9999.");
+    width_text.set_tooltip(
+        "Maximum width for slides.\nValue must be between 100 and 9999.\nOnly digits are accepted.",
+    );
+    // accept only digits
+    width_text.on_key_down(|event| {
+        if let WindowEventData::Keyboard(ref key_data) = event {
+            event.skip(number_key_down(key_data));
+        }
+    });
     let height_label = StaticText::builder(&size_box).with_label("Height:").build();
     let height_text = TextCtrl::builder(&size_box)
         .with_value(&defaults.get_slide_height().to_string())
         .build();
-    height_text.set_tooltip("Maximum height for slides.\nValue must be between 100 and 9999.");
+    height_text.set_tooltip("Maximum height for slides.\nValue must be between 100 and 9999.\nOnly digits are accepted.");
+    // accepts only digits
+    height_text.on_key_down(|event: WindowEventData| {
+        if let WindowEventData::Keyboard(ref key_data) = event {
+            event.skip(number_key_down(key_data));
+        }
+    });
     horz_sizer.add(
         &width_label,
         0,
@@ -133,4 +148,47 @@ fn create_button_sizer(&dialog: &Dialog) -> StdDialogButtonSizer {
     button_sizer.realize();
 
     button_sizer
+}
+
+fn number_key_down(key_data: &KeyboardEvent) -> bool {
+    const ZERO: i32 = 0x30;
+    const NINE: i32 = 0x39;
+    const BACKSPACE: i32 = 0x08;
+    const DELETE: i32 = 0x7f;
+    const TAB: i32 = 0x09;
+    const LEFT: i32 = 314;
+    const RIGHT: i32 = 316;
+    const HOME: i32 = 313;
+    const END: i32 = 312;
+    const KEYPAD_ZERO: i32 = 324;
+    const KEYPAD_NINE: i32 = 333;
+    const KEYPAD_HOME: i32 = 375;
+    const KEYPAD_END: i32 = 382;
+    const KEYPAD_LEFT: i32 = 376;
+    const KEYPAD_RIGHT: i32 = 378;
+    match key_data.get_unicode_key() {
+        Some(key) => {
+            if key_data.alt_down()
+                || key_data.cmd_down()
+                || key_data.control_down()
+                || key_data.meta_down()
+                || key_data.shift_down()
+            {
+                return false;
+            }
+            (ZERO..=NINE).contains(&key) || key == BACKSPACE || key == DELETE || key == TAB
+        }
+        None => {
+            let key_code = key_data.get_key_code().unwrap();
+            key_code == LEFT
+                || key_code == RIGHT
+                || key_code == HOME
+                || key_code == END
+                || key_code == KEYPAD_HOME
+                || key_code == KEYPAD_END
+                || key_code == KEYPAD_LEFT
+                || key_code == KEYPAD_RIGHT
+                || (KEYPAD_ZERO..=KEYPAD_NINE).contains(&key_code)
+        }
+    }
 }
