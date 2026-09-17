@@ -83,6 +83,14 @@ impl<'a> ImageSizeCtrlBuilder<'a> {
     }
 }
 
+/// should_skip_key_down determines if the event should be passed on or skipped.
+/// Only digits and a few unicode keys or key codes are are passed.
+///
+/// Note: calls to event.skip seem to be logically backward. That is, calling event.skip(false) actually
+/// stops key down processing.
+///
+/// Note: Because KeyboardEvent is a thin wrapper around a C++ pointer, it is not possible to create a
+/// KeyboardEvent object purely in rust to test this function.
 fn should_skip_key_down(key_data: &KeyboardEvent) -> bool {
     const ZERO: i32 = 0x30;
     const NINE: i32 = 0x39;
