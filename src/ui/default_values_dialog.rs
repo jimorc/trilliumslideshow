@@ -1,6 +1,8 @@
-use wxdragon::prelude::*;
+use wxdragon::{event::KeyboardEvent, prelude::*};
 
 use crate::values::DataValues;
+
+const BORDER: i32 = 5;
 
 pub struct DefaultValuesDialog {
     dialog: Dialog,
@@ -15,20 +17,45 @@ impl<'a> DefaultValuesDialog {
     ) -> DefaultValuesDialogBuilder<'a> {
         DefaultValuesDialogBuilder {
             parent,
-            caption: "",
+            caption,
+            width: -1,
+            height: -1,
             defaults,
         }
     }
 
-    /*        let defaults = parent.get_data().unwrap();
-        let dialog = Dialog::builder(parent.get_frame(), caption)
-            .with_size(500, 600)
-            .build();
+    pub fn show_modal(&self) -> i32 {
+        self.dialog.show_modal()
+    }
+}
 
+pub struct DefaultValuesDialogBuilder<'a> {
+    parent: &'a dyn WxWidget,
+    caption: &'a str,
+    width: i32,
+    height: i32,
+    defaults: DataValues,
+}
+
+impl<'a> DefaultValuesDialogBuilder<'a> {
+    pub fn with_caption(&mut self, caption: &'a str) -> &Self {
+        self.caption = caption;
+        self
+    }
+
+    pub fn with_size(&mut self, width: i32, height: i32) {
+        self.width = width;
+        self.height = height;
+    }
+
+    pub fn build(&self) -> DefaultValuesDialog {
+        let dialog = Dialog::builder(self.parent, self.caption)
+            .with_size(self.width, self.height)
+            .build();
         let sizer = BoxSizer::builder(Orientation::Vertical).build();
 
         // Add controls for default values here (e.g., text boxes, labels, etc.)
-        let size_box = create_size_box(&dialog, &defaults, BORDER);
+        let (size_box, width_ctrl, height_ctrl) = create_size_box(&dialog, &self.defaults, BORDER);
 
         sizer.add(&size_box, 0, SizerFlag::Top, BORDER);
 
@@ -48,42 +75,52 @@ impl<'a> DefaultValuesDialog {
 
         dialog.set_sizer(sizer, true);
         dialog.fit();
-        Self { dialog }
-    }
-
-    pub fn get_dialog(&self) -> &Dialog {
-        &self.dialog
-    }*/
-
-    pub fn show_modal(&self) -> i32 {
-        self.dialog.show_modal()
-    }
-}
-
-pub struct DefaultValuesDialogBuilder<'a> {
-    parent: &'a dyn WxWidget,
-    caption: &'a str,
-    defaults: DataValues,
-}
-
-impl<'a> DefaultValuesDialogBuilder<'a> {
-    pub fn with_caption(&mut self, caption: &'a str) -> &Self {
-        self.caption = caption;
-        self
-    }
-
-    pub fn build(&self) -> DefaultValuesDialog {
-        let dialog = Dialog::builder(self.parent, self.caption)
-            .with_size(500, 600)
-            .build();
         DefaultValuesDialog {
             dialog,
             data: self.defaults,
         }
+        /*        let defaults = parent.get_data().unwrap();
+            let dialog = Dialog::builder(parent.get_frame(), caption)
+                .with_size(500, 600)
+                .build();
+
+            let sizer = BoxSizer::builder(Orientation::Vertical).build();
+
+            // Add controls for default values here (e.g., text boxes, labels, etc.)
+            let size_box = create_size_box(&dialog, &defaults, BORDER);
+
+            sizer.add(&size_box, 0, SizerFlag::Top, BORDER);
+
+            let sep = StaticLine::builder(&dialog)
+                .with_style(StaticLineStyle::Default)
+                .with_size(Size::new(dialog.get_client_size().width, -1))
+                .build();
+            sizer.add(&sep, 0, SizerFlag::Bottom, BORDER);
+
+            let button_sizer = create_button_sizer(&dialog);
+            sizer.add_sizer(
+                &button_sizer,
+                0,
+                SizerFlag::Bottom | SizerFlag::AlignRight,
+                BORDER,
+            );
+
+            dialog.set_sizer(sizer, true);
+            dialog.fit();
+            Self { dialog }
+        }
+
+        pub fn get_dialog(&self) -> &Dialog {
+            &self.dialog
+        }*/
     }
 }
-/*
-fn create_size_box(&dialog: &Dialog, defaults: &crate::DataValues, border: i32) -> StaticBox {
+
+fn create_size_box(
+    &dialog: &Dialog,
+    defaults: &crate::DataValues,
+    border: i32,
+) -> (StaticBox, TextCtrl, TextCtrl) {
     let size_box = StaticBox::builder(&dialog)
         .with_label("Maximum Slide Size")
         .build();
@@ -144,7 +181,7 @@ fn create_size_box(&dialog: &Dialog, defaults: &crate::DataValues, border: i32) 
     size_box.set_sizer(size_sizer, true);
     size_box.set_min_size(Size::new(500, min_height));
 
-    size_box
+    (size_box, width_text, height_text)
 }
 
 fn create_button_sizer(&dialog: &Dialog) -> StdDialogButtonSizer {
@@ -185,45 +222,5 @@ fn create_button_sizer(&dialog: &Dialog) -> StdDialogButtonSizer {
 }
 
 fn number_key_down(key_data: &KeyboardEvent) -> bool {
-    const ZERO: i32 = 0x30;
-    const NINE: i32 = 0x39;
-    const BACKSPACE: i32 = 0x08;
-    const DELETE: i32 = 0x7f;
-    const TAB: i32 = 0x09;
-    const LEFT: i32 = 314;
-    const RIGHT: i32 = 316;
-    const HOME: i32 = 313;
-    const END: i32 = 312;
-    const KEYPAD_ZERO: i32 = 324;
-    const KEYPAD_NINE: i32 = 333;
-    const KEYPAD_HOME: i32 = 375;
-    const KEYPAD_END: i32 = 382;
-    const KEYPAD_LEFT: i32 = 376;
-    const KEYPAD_RIGHT: i32 = 378;
-    match key_data.get_unicode_key() {
-        Some(key) => {
-            if key_data.alt_down()
-                || key_data.cmd_down()
-                || key_data.control_down()
-                || key_data.meta_down()
-                || key_data.shift_down()
-            {
-                return false;
-            }
-            (ZERO..=NINE).contains(&key) || key == BACKSPACE || key == DELETE || key == TAB
-        }
-        None => {
-            let key_code = key_data.get_key_code().unwrap();
-            key_code == LEFT
-                || key_code == RIGHT
-                || key_code == HOME
-                || key_code == END
-                || key_code == KEYPAD_HOME
-                || key_code == KEYPAD_END
-                || key_code == KEYPAD_LEFT
-                || key_code == KEYPAD_RIGHT
-                || (KEYPAD_ZERO..=KEYPAD_NINE).contains(&key_code)
-        }
-    }
+    true
 }
-*/
