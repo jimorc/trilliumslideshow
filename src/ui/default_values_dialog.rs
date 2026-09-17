@@ -1,12 +1,14 @@
-use wxdragon::{event::KeyboardEvent, prelude::*};
+use wxdragon::prelude::*;
 
-use crate::values::DataValues;
+use crate::{ui::ImageSizeCtrl, values::DataValues};
 
 const BORDER: i32 = 5;
 
 pub struct DefaultValuesDialog {
     dialog: Dialog,
     data: DataValues,
+    width_ctrl: ImageSizeCtrl,
+    height_ctrl: ImageSizeCtrl,
 }
 
 impl<'a> DefaultValuesDialog {
@@ -78,79 +80,26 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
         DefaultValuesDialog {
             dialog,
             data: self.defaults,
+            width_ctrl,
+            height_ctrl,
         }
-        /*        let defaults = parent.get_data().unwrap();
-            let dialog = Dialog::builder(parent.get_frame(), caption)
-                .with_size(500, 600)
-                .build();
-
-            let sizer = BoxSizer::builder(Orientation::Vertical).build();
-
-            // Add controls for default values here (e.g., text boxes, labels, etc.)
-            let size_box = create_size_box(&dialog, &defaults, BORDER);
-
-            sizer.add(&size_box, 0, SizerFlag::Top, BORDER);
-
-            let sep = StaticLine::builder(&dialog)
-                .with_style(StaticLineStyle::Default)
-                .with_size(Size::new(dialog.get_client_size().width, -1))
-                .build();
-            sizer.add(&sep, 0, SizerFlag::Bottom, BORDER);
-
-            let button_sizer = create_button_sizer(&dialog);
-            sizer.add_sizer(
-                &button_sizer,
-                0,
-                SizerFlag::Bottom | SizerFlag::AlignRight,
-                BORDER,
-            );
-
-            dialog.set_sizer(sizer, true);
-            dialog.fit();
-            Self { dialog }
-        }
-
-        pub fn get_dialog(&self) -> &Dialog {
-            &self.dialog
-        }*/
     }
 }
 
 fn create_size_box(
     &dialog: &Dialog,
-    defaults: &crate::DataValues,
+    defaults: &DataValues,
     border: i32,
-) -> (StaticBox, TextCtrl, TextCtrl) {
+) -> (StaticBox, ImageSizeCtrl, ImageSizeCtrl) {
     let size_box = StaticBox::builder(&dialog)
         .with_label("Maximum Slide Size")
         .build();
     let size_sizer = BoxSizer::builder(Orientation::Vertical).build();
     let horz_sizer = BoxSizer::builder(Orientation::Horizontal).build();
     let width_label = StaticText::builder(&size_box).with_label("Width:").build();
-    let width_text = TextCtrl::builder(&size_box)
-        .with_value(&defaults.get_slide_width().to_string())
-        .with_style(TextCtrlStyle::ProcessEnter)
-        .build();
-    width_text.set_tooltip(
-        "Maximum width for slides.\nValue must be between 100 and 9999.\nOnly digits are accepted.",
-    );
-    // accept only digits
-    width_text.on_key_down(|event| {
-        if let WindowEventData::Keyboard(ref key_data) = event {
-            event.skip(number_key_down(key_data));
-        }
-    });
+    let width_text = ImageSizeCtrl::builder(&size_box, defaults.get_slide_width()).build();
     let height_label = StaticText::builder(&size_box).with_label("Height:").build();
-    let height_text = TextCtrl::builder(&size_box)
-        .with_value(&defaults.get_slide_height().to_string())
-        .build();
-    height_text.set_tooltip("Maximum height for slides.\nValue must be between 100 and 9999.\nOnly digits are accepted.");
-    // accepts only digits
-    height_text.on_key_down(|event: WindowEventData| {
-        if let WindowEventData::Keyboard(ref key_data) = event {
-            event.skip(number_key_down(key_data));
-        }
-    });
+    let height_text = ImageSizeCtrl::builder(&size_box, defaults.get_slide_height()).build();
     horz_sizer.add(
         &width_label,
         0,
@@ -158,7 +107,7 @@ fn create_size_box(
         border,
     );
     horz_sizer.add(
-        &width_text,
+        &width_text.get_ctrl(),
         0,
         SizerFlag::All | SizerFlag::AlignCenterVertical,
         border,
@@ -170,7 +119,7 @@ fn create_size_box(
         border,
     );
     horz_sizer.add(
-        &height_text,
+        &height_text.get_ctrl(),
         0,
         SizerFlag::All | SizerFlag::AlignCenterVertical,
         border,
@@ -219,8 +168,4 @@ fn create_button_sizer(&dialog: &Dialog) -> StdDialogButtonSizer {
     button_sizer.realize();
 
     button_sizer
-}
-
-fn number_key_down(key_data: &KeyboardEvent) -> bool {
-    true
 }
