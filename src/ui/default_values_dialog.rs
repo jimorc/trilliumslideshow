@@ -2,6 +2,7 @@ use wxdragon::prelude::*;
 
 use crate::{ui::ImageSizeCtrl, values::DataValues};
 
+// Border size around most widgets
 const BORDER: i32 = 5;
 
 pub struct DefaultValuesDialog {
@@ -22,7 +23,10 @@ impl<'a> DefaultValuesDialog {
             caption,
             width: -1,
             height: -1,
+            border: BORDER,
             defaults,
+            width_ctrl: None,
+            height_ctrl: None,
         }
     }
 
@@ -36,7 +40,10 @@ pub struct DefaultValuesDialogBuilder<'a> {
     caption: &'a str,
     width: i32,
     height: i32,
+    border: i32,
     defaults: DataValues,
+    width_ctrl: Option<ImageSizeCtrl>,
+    height_ctrl: Option<ImageSizeCtrl>,
 }
 
 impl<'a> DefaultValuesDialogBuilder<'a> {
@@ -45,20 +52,20 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
         self
     }
 
-    pub fn with_size(&mut self, width: i32, height: i32) {
+    pub fn with_size(&mut self, width: i32, height: i32) -> &Self {
         self.width = width;
         self.height = height;
+        self
     }
 
-    pub fn build(&self) -> DefaultValuesDialog {
+    pub fn build(&mut self) -> DefaultValuesDialog {
         let dialog = Dialog::builder(self.parent, self.caption)
             .with_size(self.width, self.height)
             .build();
         let sizer = BoxSizer::builder(Orientation::Vertical).build();
 
         // Add controls for default values here (e.g., text boxes, labels, etc.)
-        let (size_box, width_ctrl, height_ctrl) = create_size_box(&dialog, &self.defaults, BORDER);
-
+        let size_box = self.create_size_box(&dialog);
         sizer.add(&size_box, 0, SizerFlag::Top, BORDER);
 
         let sep = StaticLine::builder(&dialog)
@@ -80,57 +87,57 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
         DefaultValuesDialog {
             dialog,
             data: self.defaults,
-            width_ctrl,
-            height_ctrl,
+            width_ctrl: self.width_ctrl.unwrap(),
+            height_ctrl: self.height_ctrl.unwrap(),
         }
     }
-}
 
-fn create_size_box(
-    &dialog: &Dialog,
-    defaults: &DataValues,
-    border: i32,
-) -> (StaticBox, ImageSizeCtrl, ImageSizeCtrl) {
-    let size_box = StaticBox::builder(&dialog)
-        .with_label("Maximum Slide Size")
-        .build();
-    let size_sizer = BoxSizer::builder(Orientation::Vertical).build();
-    let horz_sizer = BoxSizer::builder(Orientation::Horizontal).build();
-    let width_label = StaticText::builder(&size_box).with_label("Width:").build();
-    let width_text = ImageSizeCtrl::builder(&size_box, defaults.get_slide_width()).build();
-    let height_label = StaticText::builder(&size_box).with_label("Height:").build();
-    let height_text = ImageSizeCtrl::builder(&size_box, defaults.get_slide_height()).build();
-    horz_sizer.add(
-        &width_label,
-        0,
-        SizerFlag::All | SizerFlag::AlignCenterVertical,
-        border,
-    );
-    horz_sizer.add(
-        &width_text.get_ctrl(),
-        0,
-        SizerFlag::All | SizerFlag::AlignCenterVertical,
-        border,
-    );
-    horz_sizer.add(
-        &height_label,
-        0,
-        SizerFlag::All | SizerFlag::AlignCenterVertical,
-        border,
-    );
-    horz_sizer.add(
-        &height_text.get_ctrl(),
-        0,
-        SizerFlag::All | SizerFlag::AlignCenterVertical,
-        border,
-    );
+    fn create_size_box(&mut self, &dialog: &Dialog) -> StaticBox {
+        let size_box = StaticBox::builder(&dialog)
+            .with_label("Maximum Slide Size")
+            .build();
+        let size_sizer = BoxSizer::builder(Orientation::Vertical).build();
+        let horz_sizer = BoxSizer::builder(Orientation::Horizontal).build();
+        let width_label = StaticText::builder(&size_box).with_label("Width:").build();
+        self.width_ctrl =
+            Some(ImageSizeCtrl::builder(&size_box, self.defaults.get_slide_width()).build());
+        let height_label = StaticText::builder(&size_box).with_label("Height:").build();
+        self.height_ctrl =
+            Some(ImageSizeCtrl::builder(&size_box, self.defaults.get_slide_height()).build());
+        horz_sizer.add(
+            &width_label,
+            0,
+            SizerFlag::All | SizerFlag::AlignCenterVertical,
+            self.border,
+        );
+        horz_sizer.add(
+            &self.width_ctrl.unwrap().get_ctrl(),
+            0,
+            SizerFlag::All | SizerFlag::AlignCenterVertical,
+            self.border,
+        );
+        horz_sizer.add(
+            &height_label,
+            0,
+            SizerFlag::All | SizerFlag::AlignCenterVertical,
+            self.border,
+        );
+        horz_sizer.add(
+            &self.height_ctrl.unwrap().get_ctrl(),
+            0,
+            SizerFlag::All | SizerFlag::AlignCenterVertical,
+            self.border,
+        );
 
-    size_sizer.add_sizer(&horz_sizer, 0, SizerFlag::All, 0);
-    let min_height = size_box.get_size().height + width_text.get_size().height + 2 * border; // Add some extra space for padding
-    size_box.set_sizer(size_sizer, true);
-    size_box.set_min_size(Size::new(500, min_height));
+        size_sizer.add_sizer(&horz_sizer, 0, SizerFlag::All, 0);
+        let min_height = size_box.get_size().height
+            + self.width_ctrl.unwrap().get_size().height
+            + 2 * self.border; // Add some extra space for padding
+        size_box.set_sizer(size_sizer, true);
+        size_box.set_min_size(Size::new(500, min_height));
 
-    (size_box, width_text, height_text)
+        size_box
+    }
 }
 
 fn create_button_sizer(&dialog: &Dialog) -> StdDialogButtonSizer {
