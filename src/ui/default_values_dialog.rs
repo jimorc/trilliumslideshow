@@ -24,6 +24,7 @@ impl<'a> DefaultValuesDialog {
             width: -1,
             height: -1,
             border: BORDER,
+            dialog: None,
             defaults,
             width_ctrl: None,
             height_ctrl: None,
@@ -41,6 +42,7 @@ pub struct DefaultValuesDialogBuilder<'a> {
     width: i32,
     height: i32,
     border: i32,
+    dialog: Option<Dialog>,
     defaults: DataValues,
     width_ctrl: Option<ImageSizeCtrl>,
     height_ctrl: Option<ImageSizeCtrl>,
@@ -62,10 +64,11 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
         let dialog = Dialog::builder(self.parent, self.caption)
             .with_size(self.width, self.height)
             .build();
+        self.dialog = Some(dialog);
         let sizer = BoxSizer::builder(Orientation::Vertical).build();
 
         // Add controls for default values here (e.g., text boxes, labels, etc.)
-        let size_box = self.create_size_box(&dialog);
+        let size_box = self.create_size_box();
         sizer.add(&size_box, 0, SizerFlag::Top, BORDER);
 
         let sep = StaticLine::builder(&dialog)
@@ -74,7 +77,7 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
             .build();
         sizer.add(&sep, 0, SizerFlag::Bottom, BORDER);
 
-        let button_sizer = create_button_sizer(&dialog);
+        let button_sizer = self.create_button_sizer();
         sizer.add_sizer(
             &button_sizer,
             0,
@@ -85,15 +88,15 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
         dialog.set_sizer(sizer, true);
         dialog.fit();
         DefaultValuesDialog {
-            dialog,
+            dialog: dialog,
             data: self.defaults,
             width_ctrl: self.width_ctrl.unwrap(),
             height_ctrl: self.height_ctrl.unwrap(),
         }
     }
 
-    fn create_size_box(&mut self, &dialog: &Dialog) -> StaticBox {
-        let size_box = StaticBox::builder(&dialog)
+    fn create_size_box(&mut self) -> StaticBox {
+        let size_box = StaticBox::builder(&self.dialog.unwrap())
             .with_label("Maximum Slide Size")
             .build();
         let size_sizer = BoxSizer::builder(Orientation::Vertical).build();
@@ -138,9 +141,9 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
 
         size_box
     }
-}
 
-fn create_button_sizer(&dialog: &Dialog) -> StdDialogButtonSizer {
+fn create_button_sizer(&mut self) -> StdDialogButtonSizer {
+    let dialog = self.dialog.unwrap();
     let button_sizer = StdDialogButtonSizerBuilder::new().build();
     let config_button = Button::builder(&dialog)
         .with_label("Configure Slideshow")
@@ -175,4 +178,5 @@ fn create_button_sizer(&dialog: &Dialog) -> StdDialogButtonSizer {
     button_sizer.realize();
 
     button_sizer
+}
 }
