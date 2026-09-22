@@ -5,6 +5,7 @@ pub struct ImageSizeCtrl {
     // Option only to allow testing
     ctrl: Option<TextCtrl>,
     value: i32,
+    ignore: bool,
 }
 
 const MIN_SIZE: i32 = 100;
@@ -42,19 +43,30 @@ impl<'a> ImageSizeCtrl {
         self.value = val;
     }
 
+    pub fn get_ignore(&self) -> bool {
+        self.ignore
+    }
+
+    pub fn set_ignore(&mut self, ignore: bool) {
+        self.ignore = ignore;
+    }
+
     pub fn get_size(&self) -> Size {
         self.ctrl.unwrap().get_size()
     }
 
-    pub fn validate(&self) -> Option<String> {
+    pub fn validate(self) -> bool {
         let ctrl_value: i32 = self.ctrl.unwrap().get_value().parse().unwrap();
         if (MIN_SIZE..=MAX_SIZE).contains(&ctrl_value) {
-            None
+            false
         } else {
-            Some(format!(
-                "Value must be between {} and {}",
-                MIN_SIZE, MAX_SIZE
-            ))
+            let msg = format!("Value must be between {} and {}", MIN_SIZE, MAX_SIZE);
+            let msg_dialog = MessageDialog::builder(&self.get_ctrl(), &msg, "Invalid Value")
+                .with_style(MessageDialogStyle::IconError | MessageDialogStyle::OK)
+                .build();
+            msg_dialog.show_modal();
+            self.get_ctrl().set_focus();
+            true
         }
     }
 }
@@ -82,16 +94,12 @@ impl<'a> ImageSizeCtrlBuilder<'a> {
         let ctrl = ImageSizeCtrl {
             ctrl: Some(text),
             value: self.value,
+            ignore: false,
         };
 
-        text.on_kill_focus(move |_| match ctrl.validate() {
-            None => {}
-            Some(err_message) => {
-                let msg = MessageDialog::builder(&text, &err_message, "Invalid Value")
-                    .with_style(MessageDialogStyle::IconError | MessageDialogStyle::OK)
-                    .build();
-                msg.show_modal();
-                text.set_focus();
+        text.on_kill_focus(move |_| {
+            if !ctrl.get_ignore() {
+                ctrl.validate();
             }
         });
         ctrl
@@ -168,6 +176,7 @@ mod tests {
         let mut ctrl = ImageSizeCtrl {
             ctrl: None,
             value: 1000,
+            ignore: false,
         };
         ctrl.set_value(MIN_SIZE - 1);
     }
@@ -177,6 +186,7 @@ mod tests {
         let mut ctrl = ImageSizeCtrl {
             ctrl: None,
             value: 1000,
+            ignore: false,
         };
         ctrl.set_value(MIN_SIZE);
         assert_eq!(ctrl.get_value(), MIN_SIZE);
@@ -188,6 +198,7 @@ mod tests {
         let mut ctrl = ImageSizeCtrl {
             ctrl: None,
             value: 1000,
+            ignore: false,
         };
         ctrl.set_value(MAX_SIZE + 1);
     }
@@ -197,6 +208,7 @@ mod tests {
         let mut ctrl = ImageSizeCtrl {
             ctrl: None,
             value: 1000,
+            ignore: false,
         };
         ctrl.set_value(MAX_SIZE);
         assert_eq!(ctrl.get_value(), MAX_SIZE);
@@ -207,6 +219,7 @@ mod tests {
         let mut ctrl = ImageSizeCtrl {
             ctrl: None,
             value: MAX_SIZE + 1,
+            ignore: false,
         };
         assert_eq!(MAX_SIZE, ctrl.get_value());
     }
@@ -216,6 +229,7 @@ mod tests {
         let mut ctrl = ImageSizeCtrl {
             ctrl: None,
             value: MIN_SIZE - 1,
+            ignore: false,
         };
         assert_eq!(MIN_SIZE, ctrl.get_value());
     }
