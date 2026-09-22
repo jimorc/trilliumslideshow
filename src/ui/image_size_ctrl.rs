@@ -45,6 +45,18 @@ impl<'a> ImageSizeCtrl {
     pub fn get_size(&self) -> Size {
         self.ctrl.unwrap().get_size()
     }
+
+    pub fn validate(&self) -> Option<String> {
+        let ctrl_value: i32 = self.ctrl.unwrap().get_value().parse().unwrap();
+        if (MIN_SIZE..=MAX_SIZE).contains(&ctrl_value) {
+            None
+        } else {
+            Some(format!(
+                "Value must be between {} and {}",
+                MIN_SIZE, MAX_SIZE
+            ))
+        }
+    }
 }
 
 pub struct ImageSizeCtrlBuilder<'a> {
@@ -67,10 +79,22 @@ impl<'a> ImageSizeCtrlBuilder<'a> {
                 event.skip(should_skip_key_down(key_data));
             }
         });
-        ImageSizeCtrl {
+        let ctrl = ImageSizeCtrl {
             ctrl: Some(text),
             value: self.value,
-        }
+        };
+
+        text.on_kill_focus(move |_| match ctrl.validate() {
+            None => {}
+            Some(err_message) => {
+                let msg = MessageDialog::builder(&text, &err_message, "Invalid Value")
+                    .with_style(MessageDialogStyle::IconError | MessageDialogStyle::OK)
+                    .build();
+                msg.show_modal();
+                text.set_focus();
+            }
+        });
+        ctrl
     }
 
     pub fn with_value(&mut self, val: i32) -> &ImageSizeCtrlBuilder<'a> {
