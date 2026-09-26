@@ -146,12 +146,7 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
         let dialog = self.dialog.unwrap();
         let button_sizer = StdDialogButtonSizerBuilder::new().build();
         let config_button = self.create_config_button();
-
-        let quit_button = Button::builder(&dialog)
-            .with_label("Quit")
-            .with_id(ID_CANCEL)
-            .build();
-        quit_button.set_tooltip("Click to terminate the program.");
+        let quit_button = self.create_quit_button();
 
         let save_button = Button::builder(&dialog)
             .with_label("Save")
@@ -184,5 +179,15 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
             dialog.end_modal(ID_NO);
         });
         config_button
+    }
+
+    fn create_quit_button(&self) -> Button {
+        let dialog = self.dialog.unwrap();
+        let quit_button = Button::builder(&dialog)
+            .with_label("Quit")
+            .with_id(ID_CANCEL)
+            .build();
+        quit_button.set_tooltip("Click to terminate the program.");
+        quit_button
     }
 }
