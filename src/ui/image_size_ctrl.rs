@@ -15,8 +15,8 @@ impl<'a> ImageSizeCtrl {
     pub fn builder(parent: &'a dyn WxWidget, value: i32) -> ImageSizeCtrlBuilder<'a> {
         ImageSizeCtrlBuilder { parent, value }
     }
-    pub fn get_ctrl(&self) -> TextCtrl {
-        self.ctrl.unwrap()
+    pub fn get_ctrl(&self) -> &TextCtrl {
+        self.ctrl.as_ref().unwrap()
     }
 
     pub fn get_value(&mut self) -> i32 {
@@ -61,7 +61,7 @@ impl<'a> ImageSizeCtrl {
             false
         } else {
             let msg = format!("Value must be between {} and {}", MIN_SIZE, MAX_SIZE);
-            let msg_dialog = MessageDialog::builder(&self.get_ctrl(), &msg, "Invalid Value")
+            let msg_dialog = MessageDialog::builder(self.get_ctrl(), &msg, "Invalid Value")
                 .with_style(MessageDialogStyle::IconError | MessageDialogStyle::OK)
                 .build();
             msg_dialog.show_modal();

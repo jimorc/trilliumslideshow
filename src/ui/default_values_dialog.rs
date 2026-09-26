@@ -114,7 +114,7 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
             self.border,
         );
         horz_sizer.add(
-            &self.width_ctrl.unwrap().get_ctrl(),
+            self.width_ctrl.unwrap().get_ctrl(),
             0,
             SizerFlag::All | SizerFlag::AlignCenterVertical,
             self.border,
@@ -126,7 +126,7 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
             self.border,
         );
         horz_sizer.add(
-            &self.height_ctrl.unwrap().get_ctrl(),
+            self.height_ctrl.unwrap().get_ctrl(),
             0,
             SizerFlag::All | SizerFlag::AlignCenterVertical,
             self.border,
