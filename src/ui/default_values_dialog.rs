@@ -147,17 +147,7 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
         let button_sizer = StdDialogButtonSizerBuilder::new().build();
         let config_button = self.create_config_button();
         let quit_button = self.create_quit_button();
-
-        let save_button = Button::builder(&dialog)
-            .with_label("Save")
-            // TODO: change this to ID_SAVE when ID_SAVE added to wxDragon
-            .with_id(ID_YES)
-            .build();
-        save_button.set_tooltip("Click to save changes.");
-        save_button.enable(false);
-        save_button.on_click(move |_| {
-            println!("save button clicked.");
-        });
+        let save_button = self.create_save_button();
 
         button_sizer.add_button(&config_button);
         button_sizer.add_button(&quit_button);
@@ -189,5 +179,20 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
             .build();
         quit_button.set_tooltip("Click to terminate the program.");
         quit_button
+    }
+
+    fn create_save_button(&self) -> Button {
+        let dialog = self.dialog.unwrap();
+        let save_button = Button::builder(&dialog)
+            .with_label("Save")
+            // TODO: change this to ID_SAVE when ID_SAVE added to wxDragon
+            .with_id(ID_YES)
+            .build();
+        save_button.set_tooltip("Click to save changes.");
+        save_button.enable(false);
+        save_button.on_click(move |_| {
+            println!("save button clicked.");
+        });
+        save_button
     }
 }
