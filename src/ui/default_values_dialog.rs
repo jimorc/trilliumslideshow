@@ -145,15 +145,7 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
     fn create_button_sizer(&mut self) -> StdDialogButtonSizer {
         let dialog = self.dialog.unwrap();
         let button_sizer = StdDialogButtonSizerBuilder::new().build();
-        let config_button = Button::builder(&dialog)
-            .with_label("Configure Slideshow")
-            // TODO: change this to ID_OK when ID_SAVE added to wxDragon
-            .with_id(ID_NO)
-            .build();
-        config_button.set_tooltip("Click to configure a slide show.");
-        config_button.on_click(move |_| {
-            dialog.end_modal(ID_NO);
-        });
+        let config_button = self.create_config_button();
 
         let quit_button = Button::builder(&dialog)
             .with_label("Quit")
@@ -178,5 +170,19 @@ impl<'a> DefaultValuesDialogBuilder<'a> {
         button_sizer.realize();
 
         button_sizer
+    }
+
+    fn create_config_button(&self) -> Button {
+        let dialog = self.dialog.unwrap();
+        let config_button = Button::builder(&dialog)
+            .with_label("Configure Slideshow")
+            // TODO: change this to ID_OK when ID_SAVE added to wxDragon
+            .with_id(ID_NO)
+            .build();
+        config_button.set_tooltip("Click to configure a slide show.");
+        config_button.on_click(move |_| {
+            dialog.end_modal(ID_NO);
+        });
+        config_button
     }
 }
