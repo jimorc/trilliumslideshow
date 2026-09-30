@@ -9,6 +9,11 @@ class MainFrame(wx.Frame):
     Main Frame for the tssconfig program
     """
 
+    BORDER = 25
+    """
+    Minimum border width around buttons in the MainFrame.
+    """
+
     def __init__(self, *args, **kw):
         # ensure the parent's __init__ is called
         super(MainFrame, self).__init__(*args, **kw)
@@ -16,17 +21,12 @@ class MainFrame(wx.Frame):
         # create a panel in the frame
         pnl = wx.Panel(self)
 
-        # put some text with a larger bold font on it
-        st = wx.StaticText(pnl, label="trilliumslideshow configuration program")
-        font = st.GetFont()
-        font.PointSize += 10
-        font = font.Bold()
-        st.SetFont(font)
+        # put buttons into buttonSizer
+        buttonSizer = self.makeButtonSizer(pnl)
 
-        # and create a sizer to manage the layout of child widgets
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(st, wx.SizerFlags().Border(wx.ALL, 25))
-        pnl.SetSizer(sizer)
+        pnlSizer = wx.BoxSizer()
+        pnlSizer.Add(buttonSizer, 1)
+        pnl.SetSizer(pnlSizer, 0)
 
         # create a menu bar
         self.makeMenuBar()
@@ -35,6 +35,34 @@ class MainFrame(wx.Frame):
         self.CreateStatusBar()
         self.SetStatusText("Welcome to tssconfig")
 
+    def makeButtonSizer(self, parent) ->wx.BoxSizer:
+        """This method creates the sizer coontaining the buttons on the MainFrame window."""
+        # put buttons into frame
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        start = self.makeStartButton(parent)
+        quit = self.makeQuitButton(parent)
+
+        sizer.Add(start, 1, wx.TOP | wx.ALIGN_CENTER_HORIZONTAL, self.BORDER)
+        sizer.Add(quit, 1, wx.TOP | wx.ALIGN_CENTER_HORIZONTAL, self.BORDER)
+        return sizer
+
+    def makeStartButton(self, parent) -> wx.Button:
+        """
+        This method creates the button to display the Load Defaults dialog.
+        """
+        button = wx.Button(parent, label = "Start Configuration")
+        button.Bind(wx.EVT_BUTTON, self.onStartClicked)
+        return button
+
+    def onStartClicked(self, _):
+        """This method handles clicks on the Start Configuration button."""
+        print("In onStartClicked")
+
+    def makeQuitButton(self, parent) -> wx.Button:
+        """This method creates a Quit button for display on the MainFrame"""
+        button = wx.Button(parent, label = "Quit")
+        button.Bind(wx.EVT_BUTTON, self.OnExit)
+        return button
 
     def makeMenuBar(self):
         """
@@ -70,7 +98,6 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnExit,  exitItem)
         self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
 
-
     def OnExit(self, event):
         """Close the frame, terminating the application."""
         self.Close(True)
@@ -86,7 +113,8 @@ if __name__ == '__main__':
     # When this module is run (not imported) then create the app, the
     # frame, show it, and start the event loop.
     app = wx.App()
-    frm = MainFrame(None, title='trilliumslideshow configuration program')
-    frm.Fit()
+    frm = MainFrame(None, title='Slideshow Configurator')
+#    frm.SetSize(-1, -1, 300, 200)
+#    frm.Fit()
     frm.Show()
     app.MainLoop()
