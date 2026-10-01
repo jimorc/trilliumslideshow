@@ -36,7 +36,8 @@ class MainFrame(wx.Frame):
         self.SetStatusText("Welcome to tssconfig")
 
     def makeButtonSizer(self, parent) ->wx.BoxSizer:
-        """This method creates the sizer coontaining the buttons on the MainFrame window."""
+        """This method creates the sizer coontaining the buttons on the 
+        MainFrame window."""
         # put buttons into frame
         sizer = wx.BoxSizer(wx.VERTICAL)
         start = self.makeStartButton(parent)
